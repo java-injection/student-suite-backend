@@ -5,4 +5,4 @@ CREATE TABLE people(
 );
 
 
-DELETE FROM people;
+DELETE FROM people WHERE name = 'luca';
