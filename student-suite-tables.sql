@@ -6,3 +6,5 @@ CREATE TABLE people(
 
 
 DELETE FROM people WHERE name = 'luca';
+
+DELETE FROM people;
