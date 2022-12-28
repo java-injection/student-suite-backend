@@ -8,7 +8,7 @@ USE student_suite_backend;
 -- USER
 DROP USER IF EXISTS 'application'@'localhost';
 CREATE USER 'application'@'localhost' IDENTIFIED BY '123';
-GRANT SELECT, EXECUTE ON student_suite_backend.* TO 'application'@'localhost' IDENTIFIED BY '123';
+GRANT SELECT, EXECUTE ON student_suite_backend.* TO 'application'@'localhost';
 
 
 
