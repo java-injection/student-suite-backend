@@ -7,9 +7,25 @@ DELIMITER &&
 CREATE DEFINER = 'application'@'localhost' PROCEDURE Cleanup()
     SQL SECURITY DEFINER
 BEGIN
+    -- svuotare tutte le tabelle dei relativi dati e rieseguire la load
+    DELETE FROM assegnazione_tutor;
+    DELETE FROM assegnazioni;
+    DELETE FROM professori;
+    DELETE FROM studenti;
+    DELETE FROM tutors;
+    DELETE FROM tasks;
+    DELETE FROM esercizi;
+    DELETE FROM tags_corsi;
+    DELETE FROM corsi;
+    DELETE FROM tags;
+
+    CALL Load();
+
 END &&
 DELIMITER ;
- 
+
+
+
   DROP PROCEDURE IF EXISTS shut_down;
 					-- procedura di cleanup con annessa reset delle eventuali variabili e drop di eventi
  DELIMITER &&
@@ -19,47 +35,9 @@ BEGIN
  
  END &&
  DELIMITER ;
-					-- procedura di load dei dati nelle varie tabelle
-DROP PROCEDURE IF EXISTS _Load;
-
-DELIMITER &&
-CREATE DEFINER = 'application'@'localhost' PROCEDURE _Load()
-    SQL SECURITY DEFINER
-BEGIN
-
-    INSERT INTO corsi (nome, cognome, data_nascita)
-    VALUES ('Luca', 'Coraci', '1985-04-22'),
-           ('Davide', 'Cascella', '2005-07-11'),
-           ('Massimo Michele', 'Morgantini', '2005-01-10'),
-           ('Alessio', 'Pecilli', '2003-07-13');
 
 
-	INSERT INTO professori (nome, cognome, data_nascita)
-	VALUES ('Luca', 'Coraci', '1985-04-22'),
-           ('Davide', 'Cascella', '2005-07-11'),
-           ('Massimo Michele', 'Morgantini', '2005-01-10'),
-           ('Alessio', 'Pecilli', '2003-07-13'),
-           ('Francesco', 'Zanini', '2005-09-23'),
-           ('Daide', 'Del Papa', '1978-02-16');
-
-
-    INSERT INTO studenti (nome, cognome, data_nascita)
-    VALUES ('acuL', 'Coraci', '1985-04-22'),
-        ('edivaD', 'Cascella', '2005-07-11'),
-        ('elehciM omissaM', 'Morgantini', '2005-01-10'),
-        ('oissalA', 'Pecilli', '2005-01-10');
-
-
-    INSERT INTO tutors (nome, cognome, data_nascita)
-    VALUES ('Luca', 'Coraci', '1985-04-22'),
-        ('Davide', 'Cascella', '2005-07-11'),
-        ('Massimo Michele', 'Morgantini', '2005-01-10'),
-        ('Alessio', 'Pecilli', '2003-07-13');
-
-END &&
-DELIMITER ;
- 
-			-- select con limit
+-- select con limit
 DROP PROCEDURE IF EXISTS _Select;
 
 DELIMITER $$
@@ -83,9 +61,65 @@ BEGIN
   END IF;
 END $$
 DELIMITER ;
- 
- CALL _SELECT()
- 
+
+
+
+DELIMITER $$
+CREATE DEFINER = 'application'@'localhost' PROCEDURE _Select(
+    IN tabella VARCHAR(30),
+    IN _limit INT
+)
+SQL SECURITY DEFINER
+BEGIN
+    IF _limit < 0
+    THEN
+
+
+    ELSE
+        SET @query = 'SELECT * FROM ? LIMIT ?';
+        PREPARE stmt FROM @query;
+        EXECUTE stmt USING tabella, _limit;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END $$
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS isTableExists;
+
+DELIMITER $$
+CREATE PROCEDURE isTableExists(
+    IN tabella VARCHAR(30),
+    OUT result BOOLEAN
+)
+BEGIN
+    DECLARE query TEXT;
+
+    SET @info_schema = 'student_suite_backend';
+    SET @type = 'BASE TABLE';
+
+    PREPARE stmt FROM 'SELECT COUNT(TABLE_NAME)
+                       FROM
+                           information_schema.TABLES
+                       WHERE
+                               TABLE_SCHEMA LIKE ? AND
+                               TABLE_TYPE LIKE ? AND
+                               TABLE_NAME = ? INTO @result_count';
+
+    SET @tab = tabella;
+    EXECUTE stmt USING @info_schema, @type, @tab;
+    DEALLOCATE PREPARE stmt;
+
+     IF @result_count = 1
+     THEN
+            SET result = TRUE;
+     ELSE
+            SET result =  FALSE;
+     END IF;
+
+END $$
+DELIMITER ;
+
  
  
  
