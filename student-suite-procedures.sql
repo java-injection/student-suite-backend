@@ -4,7 +4,7 @@
  DROP PROCEDURE IF EXISTS Cleanup;
  
 DELIMITER &&
-CREATE DEFINER = 'select'@'localhost' PROCEDURE Cleanup()
+CREATE DEFINER = 'application'@'localhost' PROCEDURE Cleanup()
     SQL SECURITY DEFINER
 BEGIN
 END &&
@@ -13,7 +13,7 @@ DELIMITER ;
   DROP PROCEDURE IF EXISTS shut_down;
 					-- procedura di cleanup con annessa reset delle eventuali variabili e drop di eventi
  DELIMITER &&
-CREATE DEFINER = 'select'@'localhost' PROCEDURE SHUT_DOWN()
+CREATE DEFINER = 'application'@'localhost' PROCEDURE SHUT_DOWN()
     SQL SECURITY DEFINER
 BEGIN
  
@@ -23,7 +23,7 @@ BEGIN
 DROP PROCEDURE IF EXISTS _Load;
 
 DELIMITER &&
-CREATE DEFINER = 'select'@'localhost' PROCEDURE _Load()
+CREATE DEFINER = 'application'@'localhost' PROCEDURE _Load()
     SQL SECURITY DEFINER
 BEGIN
 
@@ -65,7 +65,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS _Select;
 
 DELIMITER $$
-CREATE DEFINER = 'select'@'localhost' PROCEDURE _Select()
+CREATE DEFINER = 'application'@'localhost' PROCEDURE _Select()
     SQL SECURITY DEFINER
 BEGIN
   IF (SELECT COUNT(*) FROM esercizi) < 1000
