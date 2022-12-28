@@ -5,6 +5,14 @@ CREATE DATABASE IF NOT EXISTS student_suite_backend;
 USE student_suite_backend;
 
 
+-- USER
+DROP USER IF EXISTS 'application'@'localhost';
+CREATE USER 'application'@'localhost' IDENTIFIED BY '123';
+GRANT SELECT, EXECUTE ON student_suite_backend.* TO 'application'@'localhost' IDENTIFIED BY '123';
+
+
+
+
 DROP TABLE IF EXISTS corsi;
 CREATE TABLE IF NOT EXISTS corsi(
     id_corso INT UNSIGNED,
